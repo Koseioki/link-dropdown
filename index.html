@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="da">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link dropdown</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Link dropdown</h1>
+
+    <button id="customDropdownBtn"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="customDropdownList"
+            role="button">
+        Log på
+    </button>
+
+    <ul id="customDropdownList"
+        role="listbox"
+        tabindex="-1"
+        aria-labelledby="customDropdownBtn">
+        <li role="group" aria-label="Privat">
+            <div class="dropdown-group-label">Privat</div>
+            <ul class="dropdown-group-list" style="list-style: none; margin: 0; padding: 0;">
+                <li role="option" tabindex="0" data-url="https://example.com/netbank-privat">Netbank Privat</li>
+                <li role="option" tabindex="0" data-url="https://example.com/boligselvbetjening">Boligselvbetjening</li>
+                <li role="option" tabindex="0" data-url="https://example.com/underskriftsrum-privat">Underskriftsrum Privat</li>
+            </ul>
+        </li>
+        <li role="group" aria-label="Erhverv">
+            <div class="dropdown-group-label">Erhverv</div>
+            <ul class="dropdown-group-list" style="list-style: none; margin: 0; padding: 0;">
+                <li role="option" tabindex="0" data-url="https://example.com/netbank-erhverv">Netbank Erhverv</li>
+                <li role="option" tabindex="0" data-url="https://example.com/kunderum">Kunderum</li>
+                <li role="option" tabindex="0" data-url="https://example.com/underskriftsrum-erhverv">Underskriftsrum Erhverv</li>
+            </ul>
+        </li>
+    </ul>
+
+    <script>
+    const btn = document.getElementById('customDropdownBtn');
+    const list = document.getElementById('customDropdownList');
+    const options = Array.from(list.querySelectorAll('[role="option"]'));
+    let open = false;
+    let focusedIndex = 0;
+
+    function openDropdown() {
+        list.style.display = 'block';
+        btn.setAttribute('aria-expanded', 'true');
+        list.focus();
+        options[0].focus();
+        focusedIndex = 0;
+        open = true;
+    }
+
+    function closeDropdown() {
+        list.style.display = 'none';
+        btn.setAttribute('aria-expanded', 'false');
+        btn.focus();
+        open = false;
+    }
+
+    btn.addEventListener('click', () => {
+        open ? closeDropdown() : openDropdown();
+    });
+
+    btn.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openDropdown();
+        }
+    });
+
+    list.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            do {
+                focusedIndex = (focusedIndex + 1) % options.length;
+            } while (options[focusedIndex].getAttribute('role') !== 'option');
+            options[focusedIndex].focus();
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            do {
+                focusedIndex = (focusedIndex - 1 + options.length) % options.length;
+            } while (options[focusedIndex].getAttribute('role') !== 'option');
+            options[focusedIndex].focus();
+        } else if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            options[focusedIndex].click();
+        } else if (e.key === 'Escape') {
+            closeDropdown();
+        }
+    });
+
+    options.forEach((opt, idx) => {
+        opt.addEventListener('click', () => {
+            window.location.href = opt.getAttribute('data-url');
+        });
+        opt.addEventListener('focus', () => {
+            options.forEach(o => o.removeAttribute('aria-selected'));
+            opt.setAttribute('aria-selected', 'true');
+            focusedIndex = idx;
+        });
+    });
+
+    // Close dropdown if clicking outside
+    document.addEventListener('mousedown', (e) => {
+        if (!btn.contains(e.target) && !list.contains(e.target)) {
+            closeDropdown();
+        }
+    });
+    </script>
+
+</body>
+
+</html>
