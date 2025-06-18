@@ -78,16 +78,16 @@
     list.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowDown') {
             e.preventDefault();
-            do {
-                focusedIndex = (focusedIndex + 1) % options.length;
-            } while (options[focusedIndex].getAttribute('role') !== 'option');
-            options[focusedIndex].focus();
+            if (focusedIndex < options.length - 1) {
+                focusedIndex++;
+                options[focusedIndex].focus();
+            }
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
-            do {
-                focusedIndex = (focusedIndex - 1 + options.length) % options.length;
-            } while (options[focusedIndex].getAttribute('role') !== 'option');
-            options[focusedIndex].focus();
+            if (focusedIndex > 0) {
+                focusedIndex--;
+                options[focusedIndex].focus();
+            }
         } else if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             options[focusedIndex].click();
